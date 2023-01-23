@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  postgres:
+    image: postgres:{{ db_version }}
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: {{ db_password }}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+
+  dotnetapp:
+    image: {{ backend_image }}
+    ports:
+      - 8080:80
+    links:
+      - postgres
+    depends_on:
+      - "postgres"
+    networks:
+      - doctorlynetwork
+
+volumes:
+  pgdata:
+
+networks:
+  doctorlynetwork:
+    driver: bridge
